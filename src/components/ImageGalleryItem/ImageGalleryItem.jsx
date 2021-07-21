@@ -1,12 +1,22 @@
-// import React, { Component } from 'react';
 import React from 'react';
-// import ApiServise from './components/ApiServise/ApiServise';
 
 const ImageGalleryItem = ({ images }) => {
   return (
-    <li className="ImageGalleryItem">
-      <img src="" alt="" className="ImageGalleryItem-image" />
-    </li>
+    <>
+      {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+        <li
+          className="ImageGalleryItem"
+          key={id}
+          large-image-url={largeImageURL}
+        >
+          <img
+            src={webformatURL}
+            alt={tags}
+            className="ImageGalleryItem-image"
+          />
+        </li>
+      ))}
+    </>
   );
 };
 
