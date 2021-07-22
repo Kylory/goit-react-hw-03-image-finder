@@ -2,22 +2,23 @@ import React, { Component } from 'react';
 import Searchbar from './components/Searchbar/Searchbar';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
-// import Modal from './components/Modal/Modal';
-
-// import ApiServise from './components/ApiServise/ApiServise';
-
-import axios from 'axios';
-// import shortid from 'shortid';
+import Modal from './components/Modal/Modal';
+import ApiServiseFetch from './components/ApiServise/ApiServise';
 
 class App extends Component {
   state = {
     images: [],
     query: '',
     page: 1,
+    showModal: false,
+    largeimageurl: '',
   };
 
-  formSubmitHandler = searchQuery => {
-    this.setState({ query: searchQuery, page: 1, images: [] });
+  API_OPTIONS = {
+    BASE_URL: 'https://pixabay.com/api/',
+    API_KEY: '21804857-e4d02e1e62ab2bb6123c0439f',
+    IMAGE_TYPE: 'image_type=photo&orientation=horizontal',
+    PER_PAGE: 12,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -28,27 +29,68 @@ class App extends Component {
     }
   }
 
+  formSubmitHandler = searchQuery => {
+    this.setState({ query: searchQuery, page: 1, images: [] });
+  };
+
   fetchImages = () => {
     const { query, page } = this.state;
-    return axios
-      .get(
-        `https://pixabay.com/api/?q=${query}&page=${page}&key=21804857-e4d02e1e62ab2bb6123c0439f&image_type=photo&orientation=horizontal&per_page=12`,
-      )
+    const { BASE_URL, API_KEY, IMAGE_TYPE, PER_PAGE } = this.API_OPTIONS;
+    const options = {
+      query,
+      page,
+      BASE_URL,
+      API_KEY,
+      IMAGE_TYPE,
+      PER_PAGE,
+    };
+
+    ApiServiseFetch(options)
       .then(response =>
         this.setState(prevState => ({
           images: [...prevState.images, ...response.data.hits],
           page: prevState.page + 1,
         })),
-      );
+      )
+      .then(this.scrollToButton);
+  };
+
+  scrollToButton = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  openModal = e => {
+    this.setState(({ showModal }) => ({
+      showModal: true,
+      largeimageurl: e.target.getAttribute('largeimageurl'),
+    }));
+  };
+
+  closeModal = e => {
+    if (e.target === e.currentTarget || e.code === 'Escape') {
+      this.setState(({ showModal }) => ({
+        showModal: false,
+        largeimageurl: '',
+      }));
+    }
   };
 
   render() {
+    const { images, showModal, largeimageurl } = this.state;
     return (
       <>
         <Searchbar onSubmit={this.formSubmitHandler} />
-        <ImageGallery images={this.state.images} />
-        <Button onClick={this.fetchImages} images={this.state.images.length} />
-        {/* <Modal onClick={this.showModal} /> */}
+        <ImageGallery openModal={this.openModal} images={images} />
+        {images.length > 0 && <Button onClick={this.fetchImages}></Button>}
+        {showModal && (
+          <Modal
+            closeModal={this.closeModal}
+            largeimageurl={largeimageurl}
+          ></Modal>
+        )}
       </>
     );
   }

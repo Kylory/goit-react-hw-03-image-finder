@@ -1,12 +1,10 @@
 import React from 'react';
 
-const Button = ({ onClick, images }) => {
+const Button = ({ onClick }) => {
   return (
-    images > 0 && (
-      <button type="button" className="Button" onClick={onClick}>
-        Load more
-      </button>
-    )
+    <button type="button" className="Button" onClick={onClick}>
+      Load more
+    </button>
   );
 };
 
