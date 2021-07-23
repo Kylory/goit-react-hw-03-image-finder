@@ -4,6 +4,9 @@ import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
 import Modal from './components/Modal/Modal';
 import ApiServiseFetch from './components/ApiServise/ApiServise';
+import Loader from './components/Loader/Loader';
+
+// import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 class App extends Component {
   state = {
@@ -12,6 +15,7 @@ class App extends Component {
     page: 1,
     showModal: false,
     largeimageurl: '',
+    isLoading: false,
   };
 
   API_OPTIONS = {
@@ -45,14 +49,19 @@ class App extends Component {
       PER_PAGE,
     };
 
-    ApiServiseFetch(options)
-      .then(response =>
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.data.hits],
-          page: prevState.page + 1,
-        })),
-      )
-      .then(this.scrollToButton);
+    this.setState({ isLoading: true });
+
+    setTimeout(() => {
+      ApiServiseFetch(options)
+        .then(response =>
+          this.setState(prevState => ({
+            images: [...prevState.images, ...response.data.hits],
+            page: prevState.page + 1,
+          })),
+        )
+        .then(this.scrollToButton)
+        .finally(this.setState({ isLoading: false }));
+    }, 500);
   };
 
   scrollToButton = () => {
@@ -79,7 +88,7 @@ class App extends Component {
   };
 
   render() {
-    const { images, showModal, largeimageurl } = this.state;
+    const { images, showModal, largeimageurl, isLoading } = this.state;
     return (
       <>
         <Searchbar onSubmit={this.formSubmitHandler} />
@@ -91,6 +100,7 @@ class App extends Component {
             largeimageurl={largeimageurl}
           ></Modal>
         )}
+        {isLoading && <Loader></Loader>}
       </>
     );
   }
