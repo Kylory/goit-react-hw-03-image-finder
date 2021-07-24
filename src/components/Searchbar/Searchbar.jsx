@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-class Searchbar extends Component {
+class Searchbar extends React.Component {
   state = {
     query: '',
   };
@@ -10,7 +11,7 @@ class Searchbar extends Component {
     this.setState({ query: value });
   };
 
-  // Передає query в ApiServise
+  // Передає query в state App
   handleSubmit = e => {
     e.preventDefault();
     this.props.onSubmit(this.state.query);
@@ -43,5 +44,9 @@ class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default Searchbar;

@@ -6,8 +6,6 @@ import Modal from './components/Modal/Modal';
 import ApiServiseFetch from './components/ApiServise/ApiServise';
 import Loader from './components/Loader/Loader';
 
-// import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
-
 class App extends Component {
   state = {
     images: [],
@@ -25,6 +23,7 @@ class App extends Component {
     PER_PAGE: 12,
   };
 
+  //fetch при оновленні query
   componentDidUpdate(prevProps, prevState) {
     const { query } = this.state;
 
@@ -33,10 +32,12 @@ class App extends Component {
     }
   }
 
+  // Приймає searchQuery з Searchbar і записує в query
   formSubmitHandler = searchQuery => {
     this.setState({ query: searchQuery, page: 1, images: [] });
   };
 
+  //fetch
   fetchImages = () => {
     const { query, page } = this.state;
     const { BASE_URL, API_KEY, IMAGE_TYPE, PER_PAGE } = this.API_OPTIONS;
@@ -49,8 +50,8 @@ class App extends Component {
       PER_PAGE,
     };
 
+    // setTimeout для того, щоб встиг показатися Loader
     this.setState({ isLoading: true });
-
     setTimeout(() => {
       ApiServiseFetch(options)
         .then(response =>
@@ -61,9 +62,10 @@ class App extends Component {
         )
         .then(this.scrollToButton)
         .finally(this.setState({ isLoading: false }));
-    }, 500);
+    }, 400);
   };
 
+  // Автоскрол після fetch
   scrollToButton = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
@@ -71,20 +73,36 @@ class App extends Component {
     });
   };
 
+  // Відкриття модалки
+  // setTimeout для того, щоб встиг показатися Loader
   openModal = e => {
-    this.setState(({ showModal }) => ({
-      showModal: true,
-      largeimageurl: e.target.getAttribute('largeimageurl'),
-    }));
+    this.setState({ isLoading: true });
+
+    setTimeout(() => {
+      this.setState(({ showModal }) => ({
+        showModal: true,
+        largeimageurl: e.target.getAttribute('largeimageurl'),
+      }));
+      this.setState({ isLoading: false });
+    }, 300);
   };
 
-  closeModal = e => {
-    if (e.target === e.currentTarget || e.code === 'Escape') {
-      this.setState(({ showModal }) => ({
-        showModal: false,
-        largeimageurl: '',
-      }));
-    }
+  // Закриття модалки при кліку в оверлей, або при натисканні Escape
+  // closeModal = e => {
+  //   if (e.target === e.currentTarget || e.code === 'Escape') {
+  //     this.setState(({ showModal }) => ({
+  //       showModal: false,
+  //       largeimageurl: '',
+  //     }));
+  //   }
+  // };
+
+  // Закриття модалки
+  closeModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: false,
+      largeimageurl: '',
+    }));
   };
 
   render() {
@@ -100,7 +118,7 @@ class App extends Component {
             largeimageurl={largeimageurl}
           ></Modal>
         )}
-        {isLoading && <Loader></Loader>}
+        {isLoading && <Loader class={'Loader'}></Loader>}
       </>
     );
   }

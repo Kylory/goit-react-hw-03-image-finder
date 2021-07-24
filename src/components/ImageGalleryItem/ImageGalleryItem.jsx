@@ -1,10 +1,10 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
-const ImageGalleryItem = ({ images }) => {
+const ImageGalleryItem = ({ images, openModal }) => {
   return (
     <>
       {images.map(({ id, webformatURL, largeImageURL, tags }) => (
-        <li className="ImageGalleryItem" key={id}>
+        <li className="ImageGalleryItem" key={id} onClick={openModal}>
           <img
             src={webformatURL}
             alt={tags}
@@ -15,6 +15,10 @@ const ImageGalleryItem = ({ images }) => {
       ))}
     </>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  images: PropTypes.array.isRequired,
 };
 
 export default ImageGalleryItem;
