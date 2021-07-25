@@ -67,10 +67,13 @@ class App extends Component {
 
   // Автоскрол після fetch
   scrollToButton = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
+    const { page } = this.state;
+    if (page > 2) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   // Відкриття модалки
